@@ -23,6 +23,8 @@ else:
         pickle.dump(0,fp)
         fp.close()
 
+bigtimer.configure(text= time.strftime("%H:%M:%S",time.gmtime(timerSec)))
+
 def timer():
     global timerenable
     if timerenable == False:
@@ -48,18 +50,20 @@ def openFile():
     unpickler = pickle.Unpickler(file)
     data = unpickler.load()
     timerSec = data
-    print(data)
+    bigtimer.configure(text= time.strftime("%H:%M:%S",time.gmtime(timerSec)))
+    print(timerSec)
 openBtn = tk.Button(window,text="Open File",command=openFile)
 
 def reset():
     global timerSec
     timerSec = 0
+    bigtimer.configure(text= time.strftime("%H:%M:%S",time.gmtime(timerSec)))
 resetBtn = tk.Button(window,text="Reset", command=reset)
 
-saveBtn.grid(row=1,column=1, padx=20)
+saveBtn.grid(row=1,column=1, padx=(50,10))
 openBtn.grid(row=1,column=2, padx=(10,20))
 
-btn1.grid(row=2,column=1, padx=10)
+btn1.grid(row=2,column=1, padx=(50,10))
 resetBtn.grid(row=2,column=2, padx= (10,20))
 bigtimer.grid(row=3,column=1, columnspan= 2, pady= 30)
 

@@ -4,7 +4,7 @@ import time
 import os, pickle
 
 window = tk.Tk()
-window.title('Savible Timer')
+window.title('Savable Timer')
 frame1 = tk.Frame(window)
 
 btntext = tk.StringVar()

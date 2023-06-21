@@ -1,28 +1,21 @@
 import tkinter as tk
 from tkinter import filedialog
 import time
+import datetime
 import os, pickle
 
 window = tk.Tk()
 window.title('Savable Timer')
-frame1 = tk.Frame(window)
-
 btntext = tk.StringVar()
-btntext.set("Start")
+#varibles
 timerstring = 'timer'
 timerenable = False
 timerSec = 0
 timerVal = ""
+fileName = "counter"
+
+btntext.set("Start")
 bigtimer = tk.Label(window,text=timerstring,font=("Arial", 30))
-
-file_path = 'file1.dat'
-if os.path.exists(file_path):
-    print("file already exsits!")
-else:
-    with open(file_path, 'wb') as fp:
-        pickle.dump(0,fp)
-        fp.close()
-
 bigtimer.configure(text= time.strftime("%H:%M:%S",time.gmtime(timerSec)))
 
 def timer():
@@ -37,15 +30,35 @@ def timer():
 btn1 = tk.Button(window,textvariable=btntext, command=timer)
 
 def saveFile():
-    with open(file_path, 'wb') as fp:
-        pickle.dump(timerSec,fp)
-        fp.close()
-    print("Saved!")
+    global timerSec
+    filePath = filedialog.asksaveasfile(defaultextension='.dat', initialfile="counter.dat",filetypes=[("Data Files", "*.dat"),("All Files","*.*")])
+    print(filePath)
+    if filePath != None:
+        with open(filePath.name, 'w+b') as fp:
+            pickle.dump(timerSec,fp)
+            fp.close()
+        print("Saved!")
+    else: print("cancelled.")
 saveBtn = tk.Button(window,text="Save",command=saveFile)
+
+def newFileWithTimestamp():
+    global timerSec
+    global fileName
+    
+    timestamp = fileName + "_" + time.strftime("%Y%m%d_%H:%M:%S")
+    filePath = filedialog.asksaveasfile(defaultextension='.dat', initialfile= timestamp + ".dat",filetypes=[("Data Files", "*.dat"),("All Files","*.*")])
+    if filePath != None:
+        with open(filePath.name, 'wb') as fp:
+            pickle.dump(timerSec,fp)
+            fp.close()
+        print("Saved!")
+    else: print("cancelled.")
+timestampBtn = tk.Button(window,text="Save With Timestamp", command=newFileWithTimestamp)
 
 def openFile():
     global timerSec
-    filePath = 'file1.dat'
+    filePath = filedialog.askopenfilename(initialdir= os.getcwd(), title="Open File", filetypes=[("Data Files","*.dat"), ("All Files", "*.*")])
+    print(filePath)
     file = open(filePath,"rb")
     unpickler = pickle.Unpickler(file)
     data = unpickler.load()
@@ -60,12 +73,13 @@ def reset():
     bigtimer.configure(text= time.strftime("%H:%M:%S",time.gmtime(timerSec)))
 resetBtn = tk.Button(window,text="Reset", command=reset)
 
-saveBtn.grid(row=1,column=1, padx=(50,10))
-openBtn.grid(row=1,column=2, padx=(10,20))
+saveBtn.grid(row=1,column=2, padx=(10,10),pady=5)
+openBtn.grid(row=1,column=1, padx=10,pady=5)
+timestampBtn.grid(row=1,column=3, padx=(10,20),pady=5)
 
-btn1.grid(row=2,column=1, padx=(50,10))
-resetBtn.grid(row=2,column=2, padx= (10,20))
-bigtimer.grid(row=3,column=1, columnspan= 2, pady= 30)
+btn1.grid(row=2,column=1, padx=(10,10))
+resetBtn.grid(row=2,column=2, padx= (20,20))
+bigtimer.grid(row=3,column=1, columnspan= 3, pady= 30)
 
 
 def update():

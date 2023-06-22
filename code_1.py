@@ -4,8 +4,11 @@ import time
 import datetime
 import os, pickle
 
+appicon = 'appicon.ico'
+
 window = tk.Tk()
 window.title('Savable Timer')
+window.iconbitmap(appicon)
 btntext = tk.StringVar()
 #varibles
 timerstring = 'timer'

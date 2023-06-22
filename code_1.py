@@ -2,13 +2,20 @@ import tkinter as tk
 from tkinter import filedialog
 import time
 import datetime
-import os, pickle
+import os,sys, pickle
 
-appicon = 'appicon.ico'
+appicon = 'appicon2.ico'
+#code to locate image in pyinstaller executeable: https://stackoverflow.com/questions/31836104
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath('')
+    return os.path.join(base_path,relative_path)
 
 window = tk.Tk()
 window.title('Savable Timer')
-window.iconbitmap(appicon)
+window.iconbitmap(resource_path(appicon))
 btntext = tk.StringVar()
 #varibles
 timerstring = 'timer'
@@ -87,7 +94,6 @@ btn1.grid(row=2,column=1, padx=(10,10))
 resetBtn.grid(row=2,column=2, padx= (20,20))
 bigtimer.grid(row=3,column=1, columnspan= 3, pady= 30)
 
-
 def update():
     global timerSec
     
@@ -97,7 +103,6 @@ def update():
         timerVal = time.strftime("%H:%M:%S",time.gmtime(timerSec))
         print(timerSec)
         bigtimer.configure(text=timerVal)
-        
-        
+
 window.after(1000,update)
 window.mainloop()

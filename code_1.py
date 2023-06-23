@@ -49,6 +49,7 @@ timerenable = False
 timerSec = 0
 timerVal = ""
 fileName = "counter"
+#prefrencesFile = "prefrences.dat"
 
 btntext.set("Start")
 bigtimer = tk.Label(window,text=timerstring,font=("Arial", 30))
@@ -82,7 +83,7 @@ def newFileWithTimestamp():
     global timerSec
     global fileName
     
-    timestamp = fileName + "_" + time.strftime("%Y%m%d_%-I.%M-%S%p")
+    timestamp = str(fileName + "_" + time.strftime("%Y%m%d_%I.%M-%S%p"))
     timestamp = timestamp.replace(".",'\ua789', -1)
     filePath = filedialog.asksaveasfile(defaultextension='.dat', initialfile= timestamp + ".dat",filetypes=[("Data Files", "*.dat"),("All Files","*.*")])
     if filePath != None:
@@ -139,6 +140,7 @@ def on_close():
         else:
             window.destroy()
     else: window.destroy()
+
 window.after(1000,update)
 window.protocol("WM_DELETE_WINDOW", on_close)
 window.mainloop()

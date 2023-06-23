@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 import time
 import datetime
 import os,sys, pickle
@@ -12,6 +12,32 @@ def resource_path(relative_path):
     except Exception:
         base_path = os.path.abspath('')
     return os.path.join(base_path,relative_path)
+
+#custom seconds converter because time.strftime("%H:%M:%S",time.gmtime(timerSec)
+#rolls over to 01:00:00 when seconds is greater than 89999.
+def S_To_H_M_S(secondsIn: int, paddingEN: bool):
+    MS = secondsIn%3600
+    H = int(((secondsIn - MS)/3600))
+    S = MS%60
+    M = int(((MS - S)/60))
+    if paddingEN == True:
+        if S < 10:
+            sPadding = "0"
+        else:
+            sPadding = ""
+        if M < 10:
+            mPadding = "0"
+        else:
+            mPadding = ""
+        if H < 10:
+            hPadding = "0"
+        else:
+            hPadding= ""
+    else:
+        mPadding= ""
+        sPadding= ""
+    Result  = str(hPadding + str(H) + ":" + mPadding + str(M) + ":" + sPadding +str(S))
+    return Result
 
 window = tk.Tk()
 window.title('Savable Timer')
@@ -26,7 +52,7 @@ fileName = "counter"
 
 btntext.set("Start")
 bigtimer = tk.Label(window,text=timerstring,font=("Arial", 30))
-bigtimer.configure(text= time.strftime("%H:%M:%S",time.gmtime(timerSec)))
+bigtimer.configure(text= S_To_H_M_S(timerSec,True))
 
 def timer():
     global timerenable
@@ -56,7 +82,8 @@ def newFileWithTimestamp():
     global timerSec
     global fileName
     
-    timestamp = fileName + "_" + time.strftime("%Y%m%d_%H-%M-%S")
+    timestamp = fileName + "_" + time.strftime("%Y%m%d_%-I.%M-%S%p")
+    timestamp = timestamp.replace(".",'\ua789', -1)
     filePath = filedialog.asksaveasfile(defaultextension='.dat', initialfile= timestamp + ".dat",filetypes=[("Data Files", "*.dat"),("All Files","*.*")])
     if filePath != None:
         with open(filePath.name, 'wb') as fp:
@@ -68,7 +95,7 @@ timestampBtn = tk.Button(window,text="Save With Timestamp", command=newFileWithT
 
 def openFile():
     global timerSec
-    filePath = filedialog.askopenfilename(initialdir= os.getcwd(), title="Open File", filetypes=[("Data Files","*.dat"), ("All Files", "*.*")])
+    filePath = filedialog.askopenfilename(title="Open File", filetypes=[("Data Files","*.dat"), ("All Files", "*.*")])
     print(filePath)
     if filePath != '':
         file = open(filePath,"rb")
@@ -83,7 +110,7 @@ openBtn = tk.Button(window,text="Open File",command=openFile)
 def reset():
     global timerSec
     timerSec = 0
-    bigtimer.configure(text= time.strftime("%H:%M:%S",time.gmtime(timerSec)))
+    bigtimer.configure(text= S_To_H_M_S(timerSec,True))
 resetBtn = tk.Button(window,text="Reset", command=reset)
 
 saveBtn.grid(row=1,column=2, padx=(10,10),pady=5)
@@ -100,9 +127,18 @@ def update():
     window.after(1000,update)
     if(timerenable == True):
         timerSec += 1
-        timerVal = time.strftime("%H:%M:%S",time.gmtime(timerSec))
+        timerVal = S_To_H_M_S(timerSec,True)
         print(timerSec)
         bigtimer.configure(text=timerVal)
 
+def on_close():
+    askToSave = True
+    if askToSave:
+        if messagebox.askyesno("Save Timer", "Do you want to save the timer before closing?"):
+            saveFile()
+        else:
+            window.destroy()
+    else: window.destroy()
 window.after(1000,update)
+window.protocol("WM_DELETE_WINDOW", on_close)
 window.mainloop()

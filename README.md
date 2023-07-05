@@ -5,3 +5,5 @@ python timer application with save feature for tracking the time it takes me to 
 - Add autosave feature
 - convert to C#/.NET and/or javascript
 - start/ stop timer when application is opened or closed.
+- add update notifier.
+- lap feature with titles that can be renamed

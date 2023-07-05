@@ -1,4 +1,5 @@
 import os,sys,pickle
+import tkinter as tk
 
 #custom seconds converter because time.strftime("%H:%M:%S",time.gmtime(timerSec)
 #rolls over to 01:00:00 when seconds is greater than 89999.
@@ -48,11 +49,14 @@ def readPickle(fileIn: str, defaultVal, disableCheck: bool):
             data = unpickler.load()
             fp.close()
     else:
-        with open(fileIn,"w+b") as fp:
-            pickle.dump(defaultVal,fp)
-            fp.close()
+        writePickle(fileIn,0)
         with open(fileIn,"rb") as fp:
             unpickler = pickle.Unpickler(fp)
             data = unpickler.load()
             fp.close()
     return data
+
+def configureAll(slaves: list, fontSize):
+    for item in slaves:
+        item.configure(font=("arial", fontSize))
+        print(type(item))

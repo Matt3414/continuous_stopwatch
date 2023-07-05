@@ -6,6 +6,7 @@ import os,sys, pickle
 import ProgramPref
 #from ProgramPref import settingsChanged
 import customfunctions as cf
+import threading
 
 appicon = 'appicon2.ico'
 
@@ -22,10 +23,12 @@ fileName = "counter"
 defaultBtnSize = 10
 defaultTextSize  = 30
 #prefrencesFile = "prefrences.dat"
-
+settingsFile = "settings.pkl"
+sizeVar = 1
 btntext.set("Start")
 bigtimer = tk.Label(window,text=timerstring,font=("Arial", 30))
 bigtimer.configure(text= cf.S_To_H_M_S(timerSec,True))
+lastSize = 1
 
 def timer():
     global timerenable
@@ -83,6 +86,10 @@ def prefrences():
     ProgramPref.main()
 settingsBtn = tk.Button(window,text="prefrences...",command=prefrences)
 
+def refresh():
+    settings = cf.readPickle(settingsFile,[1,1],False)
+    cf.configureAll(window.grid_slaves,settings[1] * defaultBtnSize)
+
 saveBtn.grid(row=1,column=2, padx=(10,10),pady=5)
 openBtn.grid(row=1,column=1, padx=10,pady=5)
 timestampBtn.grid(row=1,column=3, padx=(10,20),pady=5)
@@ -102,9 +109,16 @@ def update():
         print(timerSec)
         bigtimer.configure(text=timerVal)
 
-
-
-
+def checkSize():
+    global lastSize
+    global defaultBtnSize
+    while True:
+        settings = cf.readPickle(settingsFile,[1,1],False)
+        if (settings != lastSize):
+            cf.configureAll(window.grid_slaves(),settings[1] * defaultBtnSize)
+            bigtimer.configure(font=("arial", 30 * settings[1]))
+            lastSize = settings
+        time.sleep(0.1)
 def on_close():
     global timerSec
     askToSave = True
@@ -116,7 +130,8 @@ def on_close():
         else:
             window.destroy()
     else: window.destroy()
-
+t= threading.Thread(target=checkSize)
+t.start()
 window.after(1000,update)
 window.protocol("WM_DELETE_WINDOW", on_close)
 window.mainloop()

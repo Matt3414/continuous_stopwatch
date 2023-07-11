@@ -11,7 +11,7 @@ import threading
 appicon = 'appicon2.ico'
 
 window = tk.Tk()
-window.title('Savable Timer')
+window.title('Savable Stopwatch V1.1.0')
 window.iconbitmap(cf.resource_path(appicon))
 btntext = tk.StringVar()
 #varibles
@@ -29,7 +29,7 @@ btntext.set("Start")
 bigtimer = tk.Label(window,text=timerstring,font=("Arial", 30))
 bigtimer.configure(text= cf.S_To_H_M_S(timerSec,True))
 lastSize = 1
-
+window.resizable(0,0)
 def timer():
     global timerenable
     if timerenable == False:
@@ -84,7 +84,7 @@ resetBtn = tk.Button(window,text="Reset", command=reset)
 
 def prefrences():
     ProgramPref.main()
-settingsBtn = tk.Button(window,text="prefrences...",command=prefrences)
+settingsBtn = tk.Button(window,text="Settings...",command=prefrences)
 
 def refresh():
     settings = cf.readPickle(settingsFile,[1,1],False)

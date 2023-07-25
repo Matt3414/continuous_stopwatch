@@ -11,7 +11,7 @@ import threading
 appicon = 'appicon2.ico'
 
 window = tk.Tk()
-window.title('Savable Stopwatch V1.1.0')
+window.title('Savable Stopwatch V1.2.0')
 window.iconbitmap(cf.resource_path(appicon))
 btntext = tk.StringVar()
 #varibles
@@ -114,14 +114,15 @@ def checkSize():
     global defaultBtnSize
     while True:
         settings = cf.readPickle(settingsFile,[1,1],False)
-        if (settings != lastSize):
+        if (settings[1] != lastSize):
             cf.configureAll(window.grid_slaves(),settings[1] * defaultBtnSize)
             bigtimer.configure(font=("arial", 30 * settings[1]))
-            lastSize = settings
+            lastSize = settings[1]
         time.sleep(0.1)
 def on_close():
     global timerSec
-    askToSave = True
+    settings = cf.readPickle(settingsFile,[1,1],False)
+    askToSave = bool(settings[0])
     if askToSave and timerSec > 0:
         print (timerSec)
         if messagebox.askyesno("Save Timer", "Do you want to save the timer before closing?"):
@@ -129,6 +130,8 @@ def on_close():
             window.destroy()
         else:
             window.destroy()
+            from ProgramPref import StopPanel
+            StopPanel()
     else: window.destroy()
 t= threading.Thread(target=checkSize)
 t.start()

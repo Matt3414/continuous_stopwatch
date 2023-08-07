@@ -130,8 +130,6 @@ def on_close():
             window.destroy()
         else:
             window.destroy()
-            from ProgramPref import StopPanel
-            StopPanel()
     else: window.destroy()
 t= threading.Thread(target=checkSize)
 t.start()

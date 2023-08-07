@@ -22,6 +22,7 @@ def S_To_H_M_S(secondsIn: int, paddingEN: bool):
         else:
             hPadding= ""
     else:
+        hPadding= ""
         mPadding= ""
         sPadding= ""
     Result  = str(hPadding + str(H) + ":" + mPadding + str(M) + ":" + sPadding +str(S))

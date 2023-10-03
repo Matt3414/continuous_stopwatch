@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 import time
 import datetime
-import os,sys, pickle
+import os,sys, json
 import ProgramPref
 #from ProgramPref import settingsChanged
 import customfunctions as cf
@@ -13,6 +13,8 @@ appicon = 'appicon2.ico'
 window = tk.Tk()
 window.title('Savable Stopwatch V1.2.0')
 window.iconbitmap(cf.resource_path(appicon))
+frame_container = tk.Frame(window)
+
 btntext = tk.StringVar()
 #varibles
 timerstring = 'timer'
@@ -44,10 +46,10 @@ btn1 = tk.Button(window,textvariable=btntext, command=timer)
 def saveFile():
     global timerSec
     global fileName
-    filePath = filedialog.asksaveasfile(defaultextension='.dat', initialfile=fileName+".dat",filetypes=[("Data Files", "*.dat"),("All Files","*.*")])
+    filePath = filedialog.asksaveasfile(defaultextension='.json', initialfile=fileName+".json",filetypes=[("json Files", "*.json"),("All Files","*.*")])
     print(filePath)
     if filePath != None:
-        cf.writePickle(filePath.name, timerSec)
+        cf.writeJSON(filePath.name, timerSec,"seconds")
         print("Saved!")
     else: print("cancelled.")
 saveBtn = tk.Button(window,text="Save",command=saveFile)
@@ -58,19 +60,20 @@ def newFileWithTimestamp():
     
     timestamp = str(fileName + "_" + time.strftime("%Y%m%d_%I.%M-%S%p"))
     timestamp = timestamp.replace(".",'\ua789', -1)
-    filePath = filedialog.asksaveasfile(defaultextension='.dat', initialfile= timestamp + ".dat",filetypes=[("Data Files", "*.dat"),("All Files","*.*")])
+    filePath = filedialog.asksaveasfile(defaultextension='.json', initialfile= timestamp + ".json",filetypes=[("Data Files", "*.json"),("All Files","*.*")])
     if filePath != None:
-        cf.writePickle(filePath.name,timerSec)
+        cf.writeJSON(filePath.name,timerSec,"seconds")
         print("Saved!")
     else: print("cancelled.")
 timestampBtn = tk.Button(window,text="Save With Timestamp", command=newFileWithTimestamp)
 
 def openFile():
     global timerSec
-    filePath = filedialog.askopenfilename(title="Open File", filetypes=[("Data Files","*.dat"), ("All Files", "*.*")])
+    filePath = filedialog.askopenfilename(title="Open File", filetypes=[("json Files","*.json"), ("All Files", "*.*")])
     print(filePath)
     if filePath != '':
-        timerSec = cf.readPickle(filePath,0,True)
+        readJSON = cf.readJSON(filePath,0,True,"seconds")
+        timerSec = readJSON[0]
         bigtimer.configure(text= time.strftime("%H:%M:%S",time.gmtime(timerSec)))
         print(timerSec)
     else: print("cancelled.")

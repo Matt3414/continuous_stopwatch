@@ -1,4 +1,4 @@
-import os,sys,pickle
+import os,sys,pickle,json
 import tkinter as tk
 
 #custom seconds converter because time.strftime("%H:%M:%S",time.gmtime(timerSec)
@@ -56,6 +56,40 @@ def readPickle(fileIn: str, defaultVal, disableCheck: bool):
             data = unpickler.load()
             fp.close()
     return data
+
+def writeJSON(fileIn:str, dataIn,index:str):
+    with open(fileIn, "w+") as fp:
+        try:
+            buffer = json.load(fp)
+        except json.JSONDecodeError:
+            buffer = []
+            buffer = {index: [dataIn]}
+            #buffer[index] = dataIn
+        json.dump(obj=buffer, fp= fp, indent=4,separators=(',', ': '))
+        fp.close()
+        buffer = 0
+
+def readJSON(fileIn,defVal = 0, createIfDosentExist:bool = True, index:str = "seconds"):
+    if(os.path.exists(fileIn) or not createIfDosentExist):
+        try:
+            with open(fileIn,"r+") as fp:
+                fullData = json.load(fp)
+                data = fullData[index]
+                fp.close()
+        except json.JSONDecodeError:
+            data = [1]
+            data[0] = 0
+    else:
+        writeJSON(fileIn,0,index)
+        with open(fileIn,"r") as fp:
+            fullData = json.load(fp)
+            data = fullData[index]
+            fp.close()
+    print (type(data))
+    print (data)
+    return data
+    
+    
 
 def configureAll(slaves: list, fontSize):
     for item in slaves:
